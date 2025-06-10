@@ -115,6 +115,10 @@ export default function MonitorPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
+        {/* CSD Batch B Heading */}
+        <div className="flex justify-center mb-2">
+          <h2 className="text-2xl font-bold text-indigo-700">CSD Batch B</h2>
+        </div>
         {/* TTS Enable Button */}
         {!ttsEnabled && (
           <div className="flex justify-center mb-4">
@@ -128,8 +132,9 @@ export default function MonitorPage() {
         )}
         {/* Random GIF */}
         {gifUrl && (
-          <div className="flex justify-center mb-4">
+          <div className="flex flex-col items-center mb-4">
             <img src={gifUrl} alt="Celebration gif" className="rounded shadow max-h-56" />
+            <span className="mt-2 text-sm text-gray-600">If the GIF changes, the numbers have rolled.</span>
           </div>
         )}
         {/* Header */}
