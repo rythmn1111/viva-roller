@@ -26,6 +26,7 @@ export default function MonitorPage() {
   const [queueStatus, setQueueStatus] = useState<QueueStatus | null>(null)
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
   const [ttsEnabled, setTtsEnabled] = useState(false)
+  const [gifUrl, setGifUrl] = useState<string | null>(null)
   // Keep track of previous enrollment numbers
   const prevNumbersRef = useRef<string[]>([])
   const firstAnnounceDone = useRef(false)
@@ -49,6 +50,28 @@ export default function MonitorPage() {
     fetchStatus()
     return () => clearInterval(interval)
   }, [])
+
+  // Fetch a random GIF whenever the batch changes
+  useEffect(() => {
+    if (!queueStatus || !queueStatus.currentStudents) return;
+    // Use the batch as a key
+    const batchKey = queueStatus.currentStudents.map(s => s.enrollment_number).join(',');
+    if (!batchKey) return;
+    let ignore = false;
+    async function fetchGif() {
+      try {
+        // Tenor v1 public API key
+        const apiKey = 'LIVDSRZULELA'; // Tenor public demo key
+        const res = await fetch(`https://api.tenor.com/v1/search?q=celebration&key=${apiKey}&limit=1&media_filter=minimal`);
+        const json = await res.json();
+        if (!ignore && json.results && json.results.length > 0) {
+          setGifUrl(json.results[0].media[0].gif.url);
+        }
+      } catch {}
+    }
+    fetchGif();
+    return () => { ignore = true; };
+  }, [queueStatus?.currentStudents]);
 
   // Announce new numbers when currentStudents changes, only if TTS is enabled
   useEffect(() => {
@@ -101,6 +124,12 @@ export default function MonitorPage() {
             >
               🔊 Enable Announcements
             </button>
+          </div>
+        )}
+        {/* Random GIF */}
+        {gifUrl && (
+          <div className="flex justify-center mb-4">
+            <img src={gifUrl} alt="Celebration gif" className="rounded shadow max-h-56" />
           </div>
         )}
         {/* Header */}
